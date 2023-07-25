@@ -15,6 +15,7 @@ def analyze():
     # Perform analysis with OpenAI API
     analysis_results = analyze_ethical_concerns(ethical_concerns, company_overviews)
 
+    #test comment
     return jsonify(analysis_results)
 
 if __name__ == '__main__':
