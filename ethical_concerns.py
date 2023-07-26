@@ -16,6 +16,8 @@ def get_company_overviews(companies):
             company_overview = response.json()
             company_overviews[company] = company_overview['Description']
 
+    #pointless comment
+
     return company_overviews
 
 # Function to analyze ethical concerns with OpenAI API
