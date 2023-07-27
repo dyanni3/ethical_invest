@@ -1,5 +1,0 @@
-# Replace 'YOUR_ALPHA_VANTAGE_API_KEY' and 'YOUR_OPENAI_API_KEY' with your actual API keys
-ALPHA_VANTAGE_API_KEY = "7RFQXDWPMI7B1VTA"
-OPENAI_API_KEY = "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"
-
-#test gitignore
