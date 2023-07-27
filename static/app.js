@@ -1,135 +1,76 @@
-import axios from 'axios';
+// DOM elements
+const subscribeForm = document.querySelector('#subscribe form');
+const ethicalConcernsInput = document.querySelector('#selection #ethical-concerns');
+const companySymbolsInput = document.querySelector('#selection #company-symbols');
+const analyzeButton = document.querySelector('#analyze-btn');
+const outputTextDiv = document.querySelector('#output-text');
 
-Vue.config.delimiters = ['[[', ']]'];
+// Event listeners
+subscribeForm.addEventListener('submit', (event) => {
+    event.preventDefault();
+    const email = event.target.elements['email'].value;
+    // Use Axios to send the email to the backend for subscription handling
+    // Implement the API call to the backend for subscribing the user
+});
 
-// EthicalDropdown Component
-Vue.component('ethical-dropdown', {
-  data() {
-    return {
-      selectedEthicalConcerns: '',
-      ethicalConcerns: [
-        'Environmental impact',
-        'Social Impact',
-        'Halal investing',
-        'Labor Practices',
-        'Animal Welfare',
-        'Military' ,
-      ]
+// Event listener for when the user clicks the Analyze button
+analyzeButton.addEventListener('click', () => {
+    const selectedEthicalConcerns = ethicalConcernsInput.value.split(',').map(concern => concern.trim());
+    const selectedCompanySymbols = companySymbolsInput.value.split(',').map(symbol => symbol.trim());
+
+    // Data to be sent to the backend
+    const data = {
+        ethical_concerns: selectedEthicalConcerns,
+        companies: selectedCompanySymbols
     };
-  },
-  template: `
-    <div>
-      <label for="ethicalConcerns">Ethical Concerns:</label>
-      <select v-model="selectedEthicalConcerns" multiple>
-        <option v-for="concern in ethicalConcerns" :key="concern">[[ concern ]]</option>
-      </select>
-      <button @click="addEthicalConcerns">Add</button>
-    </div>
-  `,
-  methods: {
-    addEthicalConcerns() {
-      if (this.selectedEthicalConcerns.length > 0) {
-        this.$emit('add-ethical-concerns', this.selectedEthicalConcerns);
-        this.selectedEthicalConcerns = [];
-      }
-    }
-  }
-});
 
-// Ethical Considerations and Company Symbols Form Component
-Vue.component('input-form', {
-  data() {
-    return {
-      ethicalConcerns: [],
-      companySymbols: []
-    };
-  },
-  template: `
-    <div>
-      <div>
-        <label for="ethicalConcerns">Ethical Concerns:</label>
-        <input type="text" v-model="newEthicalConcern" @keyup.enter="addEthicalConcern">
-        <button @click="addEthicalConcern">Add</button>
-      </div>
-      <div>
-        <ul>
-          <li v-for="(concern, index) in ethicalConcerns" :key="index">
-            [[ concern ]]
-            <button @click="removeEthicalConcern(index)">Remove</button>
-          </li>
-        </ul>
-      </div>
-      <div>
-        <label for="companySymbols">Company Symbols:</label>
-        <input type="text" v-model="newCompanySymbol" @keyup.enter="addCompanySymbol">
-        <button @click="addCompanySymbol">Add</button>
-      </div>
-      <div>
-        <ul>
-          <li v-for="(symbol, index) in companySymbols" :key="index">
-           [[{ symbol ]]
-            <button @click="removeCompanySymbol(index)">Remove</button>
-          </li>
-        </ul>
-      </div>
-    </div>
-  `,
-  methods: {
-    addEthicalConcern() {
-      if (this.newEthicalConcern) {
-        this.ethicalConcerns.push(this.newEthicalConcern);
-        this.newEthicalConcern = '';
-      }
-    },
-    removeEthicalConcern(index) {
-      this.ethicalConcerns.splice(index, 1);
-    },
-    addCompanySymbol() {
-      if (this.newCompanySymbol) {
-        this.companySymbols.push(this.newCompanySymbol);
-        this.newCompanySymbol = '';
-      }
-    },
-    removeCompanySymbol(index) {
-      this.companySymbols.splice(index, 1);
-    }
-  }
-});
-
-// Output Component
-Vue.component('output-results', {
-  props: ['analysisResults'],
-  template: `
-    <div>
-      <pre>{[[analysisResults ]]</pre>
-    </div>
-  `
-});
-
-document.addEventListener('DOMContentLoaded', function () {
-// Main Vue Instance
-new Vue({
-  el: '#app',
-  data: {
-    analysisResults: {}
-  },
-  methods: {
-    analyzeData() {
-      // Get the ethical concerns and company symbols from the Vue component
-      const ethicalConcerns = this.$refs.inputForm.ethicalConcerns;
-      const companySymbols = this.$refs.inputForm.companySymbols;
-
-      // Make the API request to your Flask backend
-      axios.post('/analyze', { ethical_concerns: ethicalConcerns, company_symbols: companySymbols })
+    // Use Axios to send the selected data to the backend for processing
+    axios.post('/analyze', data)
         .then(response => {
-          // Handle the response from the backend
-          this.analysisResults = response.data;
+            const analysisResults = response.data;
+
+            // Create a table to display the analysis results
+            let tableHTML = `
+                <table class="table table-bordered table-striped">
+                    <thead>
+                        <tr>
+                            <th>Company</th>
+                            <th>Ethical Concern</th>
+                            <th>Score</th>
+                            <th>Details</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+            `;
+
+            // Loop through the analysis results and add rows to the table
+            for (const companySymbol in analysisResults) {
+                const companyData = analysisResults[companySymbol];
+
+                for (const concern in companyData) {
+                    const [score, details] = companyData[concern];
+
+                    tableHTML += `
+                        <tr>
+                            <td>${companySymbol}</td>
+                            <td>${concern}</td>
+                            <td>${score}</td>
+                            <td>${details}</td>
+                        </tr>
+                    `;
+                }
+            }
+
+            // Close the table HTML
+            tableHTML += `
+                    </tbody>
+                </table>
+            `;
+
+            // Display the table in the output text div
+            outputTextDiv.innerHTML = tableHTML;
         })
         .catch(error => {
-          // Handle any errors that occurred during the API request
-          console.error('Error:', error);
+            console.error('Error analyzing data:', error);
         });
-    }
-  }
 });
-

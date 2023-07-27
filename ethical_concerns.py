@@ -27,4 +27,5 @@ def analyze_ethical_concerns(ethical_concerns, company_overviews):
     client.add_overviews(company_overviews)
     client.add_ethical_considerations(ethical_concerns)
     findings = client.get_findings()
+    print(findings)
     return findings
