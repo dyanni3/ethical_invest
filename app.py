@@ -1,7 +1,11 @@
-from flask import Flask, jsonify, request
+from flask import Flask, jsonify, request, render_template
 from ethical_concerns import get_company_overviews, analyze_ethical_concerns
 
 app = Flask(__name__)
+
+@app.route("/")
+def index():
+    return render_template('index.html')
 
 
 @app.route("/analyze", methods=["POST"])
