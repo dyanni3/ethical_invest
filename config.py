@@ -1,3 +1,4 @@
-# Replace with your actual API keys
-ALPHA_VANTAGE_API_KEY = "<YOUR_KEY>"
-OPENAI_API_KEY = "sk-<YOUR_KEY>"
+# Replace 'YOUR_ALPHA_VANTAGE_API_KEY' and 'YOUR_OPENAI_API_KEY' with your actual API keys
+ALPHA_VANTAGE_API_KEY = "7RFQXDWPMI7B1VTA"
+OPENAI_API_KEY = "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"
+
