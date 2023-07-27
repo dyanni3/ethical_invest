@@ -4,13 +4,13 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Your Web App</title>
-  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
 </head>
 <body>
   <div id="app">
     <!-- About Section -->
     <section class="about-section">
-      <h1>Welcome to Your Web App</h1>
+      <h1>Welcome to ei2 an ethical investing application</h1>
       <p>Learn about our mission to analyze ethical considerations in investments.</p>
     </section>
 
@@ -23,18 +23,34 @@
 
     <!-- Ethical Considerations and Company Symbols Form -->
     <section class="form-section">
+      <h2>Dropdown</h2>
+      <ethical-dropdown @add-ethical-concerns="addEthicalConcernsToForm"></ethical-dropdown>
+      <div>
+        <ul>
+          <li v-for="(concern, index) in ethicalConcerns" :key="index">
+            {{ concern }}
+            <button @click="removeEthicalConcern(index)">Remove</button>
+          </li>
+        </ul>
+      </div>
+      <!-- ... -->
+    </section>
+
+    <!-- Ethical Considerations and Company Symbols Form -->
+    <section class="form-section">
       <h2>Select Ethical Considerations and Company Symbols</h2>
-      <!-- Vue.js components will be added here -->
+      <input-form></input-form>
     </section>
 
     <!-- Output Component -->
     <section class="output-section">
       <h2>Analysis Results</h2>
-      <!-- Vue.js components will be added here -->
+      <output-results></output-results>
     </section>
   </div>
 
+
   <script src="https://cdn.jsdelivr.net/npm/vue@2.6.14/dist/vue.js"></script>
-  <script src="app.js"></script>
+  <script src="{{ url_for('static', filename='app.js') }}"></script>
 </body>
 </html>

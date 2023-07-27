@@ -1,3 +1,41 @@
+import axios from 'axios';
+
+Vue.config.delimiters = ['[[', ']]'];
+
+// EthicalDropdown Component
+Vue.component('ethical-dropdown', {
+  data() {
+    return {
+      selectedEthicalConcerns: '',
+      ethicalConcerns: [
+        'Environmental impact',
+        'Social Impact',
+        'Halal investing',
+        'Labor Practices',
+        'Animal Welfare',
+        'Military' ,
+      ]
+    };
+  },
+  template: `
+    <div>
+      <label for="ethicalConcerns">Ethical Concerns:</label>
+      <select v-model="selectedEthicalConcerns" multiple>
+        <option v-for="concern in ethicalConcerns" :key="concern">[[ concern ]]</option>
+      </select>
+      <button @click="addEthicalConcerns">Add</button>
+    </div>
+  `,
+  methods: {
+    addEthicalConcerns() {
+      if (this.selectedEthicalConcerns.length > 0) {
+        this.$emit('add-ethical-concerns', this.selectedEthicalConcerns);
+        this.selectedEthicalConcerns = [];
+      }
+    }
+  }
+});
+
 // Ethical Considerations and Company Symbols Form Component
 Vue.component('input-form', {
   data() {
@@ -16,7 +54,7 @@ Vue.component('input-form', {
       <div>
         <ul>
           <li v-for="(concern, index) in ethicalConcerns" :key="index">
-            {{ concern }}
+            [[ concern ]]
             <button @click="removeEthicalConcern(index)">Remove</button>
           </li>
         </ul>
@@ -29,7 +67,7 @@ Vue.component('input-form', {
       <div>
         <ul>
           <li v-for="(symbol, index) in companySymbols" :key="index">
-            {{ symbol }}
+           [[{ symbol ]]
             <button @click="removeCompanySymbol(index)">Remove</button>
           </li>
         </ul>
@@ -63,11 +101,12 @@ Vue.component('output-results', {
   props: ['analysisResults'],
   template: `
     <div>
-      <pre>{{ analysisResults }}</pre>
+      <pre>{[[analysisResults ]]</pre>
     </div>
   `
 });
 
+document.addEventListener('DOMContentLoaded', function () {
 // Main Vue Instance
 new Vue({
   el: '#app',
@@ -75,12 +114,22 @@ new Vue({
     analysisResults: {}
   },
   methods: {
-    // Function to make API request and update analysisResults
-    // You need to implement this function to interact with your backend
     analyzeData() {
-      // Replace the below with actual API request to your backend
-      // Use the data from the input-form component to make the request
-      this.analysisResults = { result: 'Analysis results will be displayed here.' };
+      // Get the ethical concerns and company symbols from the Vue component
+      const ethicalConcerns = this.$refs.inputForm.ethicalConcerns;
+      const companySymbols = this.$refs.inputForm.companySymbols;
+
+      // Make the API request to your Flask backend
+      axios.post('/analyze', { ethical_concerns: ethicalConcerns, company_symbols: companySymbols })
+        .then(response => {
+          // Handle the response from the backend
+          this.analysisResults = response.data;
+        })
+        .catch(error => {
+          // Handle any errors that occurred during the API request
+          console.error('Error:', error);
+        });
     }
   }
 });
+
